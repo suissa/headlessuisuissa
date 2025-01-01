@@ -50,7 +50,7 @@ export type ComboboxInputProps<TTag extends ElementType = typeof DEFAULT_INPUT_T
     onChange?(event: React.ChangeEvent<HTMLInputElement>): void;
     autoFocus?: boolean;
     autocomplete?: {
-        type: HTMLInputElement['autocomplete'];
+        type: string;
         default: 'off';
     };
 }>;

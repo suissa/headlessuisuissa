@@ -989,14 +989,14 @@ function match(value, lookup, ...args) {
     let returnValue = lookup[value];
     return typeof returnValue === "function" ? returnValue(...args) : returnValue;
   }
-  let error2 = new Error(
+  let error = new Error(
     `Tried to handle "${value}" but there is no handler defined. Only defined handlers are: ${Object.keys(
       lookup
     ).map((key) => `"${key}"`).join(", ")}.`
   );
   if (Error.captureStackTrace)
-    Error.captureStackTrace(error2, match);
-  throw error2;
+    Error.captureStackTrace(error, match);
+  throw error;
 }
 
 // src/utils/render.ts
@@ -2719,7 +2719,7 @@ function useVirtualizer(options) {
 
 // src/components/combobox/combobox.tsx
 var import_react54 = __toESM(require("react"), 1);
-var import_react_dom6 = require("react-dom");
+var import_react_dom7 = require("react-dom");
 
 // src/hooks/use-by-comparator.ts
 var import_react28 = require("react");
@@ -3902,172 +3902,6 @@ function useWatch(cb, dependencies) {
   }, [action, ...dependencies]);
 }
 
-// node_modules/@floating-ui/react/dist/floating-ui.react.mjs
-var React13 = __toESM(require("react"), 1);
-var import_react46 = require("react");
-
-// ../../node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
-function hasWindow() {
-  return typeof window !== "undefined";
-}
-function getNodeName(node) {
-  if (isNode(node)) {
-    return (node.nodeName || "").toLowerCase();
-  }
-  return "#document";
-}
-function getWindow(node) {
-  var _node$ownerDocument;
-  return (node == null || (_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.defaultView) || window;
-}
-function getDocumentElement(node) {
-  var _ref;
-  return (_ref = (isNode(node) ? node.ownerDocument : node.document) || window.document) == null ? void 0 : _ref.documentElement;
-}
-function isNode(value) {
-  if (!hasWindow()) {
-    return false;
-  }
-  return value instanceof Node || value instanceof getWindow(value).Node;
-}
-function isElement(value) {
-  if (!hasWindow()) {
-    return false;
-  }
-  return value instanceof Element || value instanceof getWindow(value).Element;
-}
-function isHTMLElement(value) {
-  if (!hasWindow()) {
-    return false;
-  }
-  return value instanceof HTMLElement || value instanceof getWindow(value).HTMLElement;
-}
-function isShadowRoot(value) {
-  if (!hasWindow() || typeof ShadowRoot === "undefined") {
-    return false;
-  }
-  return value instanceof ShadowRoot || value instanceof getWindow(value).ShadowRoot;
-}
-function isOverflowElement(element) {
-  const {
-    overflow,
-    overflowX,
-    overflowY,
-    display
-  } = getComputedStyle2(element);
-  return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && !["inline", "contents"].includes(display);
-}
-function isTableElement(element) {
-  return ["table", "td", "th"].includes(getNodeName(element));
-}
-function isTopLayer(element) {
-  return [":popover-open", ":modal"].some((selector) => {
-    try {
-      return element.matches(selector);
-    } catch (e) {
-      return false;
-    }
-  });
-}
-function isContainingBlock(elementOrCss) {
-  const webkit = isWebKit();
-  const css = isElement(elementOrCss) ? getComputedStyle2(elementOrCss) : elementOrCss;
-  return css.transform !== "none" || css.perspective !== "none" || (css.containerType ? css.containerType !== "normal" : false) || !webkit && (css.backdropFilter ? css.backdropFilter !== "none" : false) || !webkit && (css.filter ? css.filter !== "none" : false) || ["transform", "perspective", "filter"].some((value) => (css.willChange || "").includes(value)) || ["paint", "layout", "strict", "content"].some((value) => (css.contain || "").includes(value));
-}
-function getContainingBlock(element) {
-  let currentNode = getParentNode(element);
-  while (isHTMLElement(currentNode) && !isLastTraversableNode(currentNode)) {
-    if (isContainingBlock(currentNode)) {
-      return currentNode;
-    } else if (isTopLayer(currentNode)) {
-      return null;
-    }
-    currentNode = getParentNode(currentNode);
-  }
-  return null;
-}
-function isWebKit() {
-  if (typeof CSS === "undefined" || !CSS.supports)
-    return false;
-  return CSS.supports("-webkit-backdrop-filter", "none");
-}
-function isLastTraversableNode(node) {
-  return ["html", "body", "#document"].includes(getNodeName(node));
-}
-function getComputedStyle2(element) {
-  return getWindow(element).getComputedStyle(element);
-}
-function getNodeScroll(element) {
-  if (isElement(element)) {
-    return {
-      scrollLeft: element.scrollLeft,
-      scrollTop: element.scrollTop
-    };
-  }
-  return {
-    scrollLeft: element.scrollX,
-    scrollTop: element.scrollY
-  };
-}
-function getParentNode(node) {
-  if (getNodeName(node) === "html") {
-    return node;
-  }
-  const result = (
-    // Step into the shadow DOM of the parent of a slotted node.
-    node.assignedSlot || // DOM Element detected.
-    node.parentNode || // ShadowRoot detected.
-    isShadowRoot(node) && node.host || // Fallback.
-    getDocumentElement(node)
-  );
-  return isShadowRoot(result) ? result.host : result;
-}
-function getNearestOverflowAncestor(node) {
-  const parentNode = getParentNode(node);
-  if (isLastTraversableNode(parentNode)) {
-    return node.ownerDocument ? node.ownerDocument.body : node.body;
-  }
-  if (isHTMLElement(parentNode) && isOverflowElement(parentNode)) {
-    return parentNode;
-  }
-  return getNearestOverflowAncestor(parentNode);
-}
-function getOverflowAncestors(node, list, traverseIframes) {
-  var _node$ownerDocument2;
-  if (list === void 0) {
-    list = [];
-  }
-  if (traverseIframes === void 0) {
-    traverseIframes = true;
-  }
-  const scrollableAncestor = getNearestOverflowAncestor(node);
-  const isBody = scrollableAncestor === ((_node$ownerDocument2 = node.ownerDocument) == null ? void 0 : _node$ownerDocument2.body);
-  const win = getWindow(scrollableAncestor);
-  if (isBody) {
-    const frameElement = getFrameElement(win);
-    return list.concat(win, win.visualViewport || [], isOverflowElement(scrollableAncestor) ? scrollableAncestor : [], frameElement && traverseIframes ? getOverflowAncestors(frameElement) : []);
-  }
-  return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, [], traverseIframes));
-}
-function getFrameElement(win) {
-  return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
-}
-
-// node_modules/@floating-ui/react/dist/floating-ui.react.utils.mjs
-function getUserAgent() {
-  const uaData = navigator.userAgentData;
-  if (uaData && Array.isArray(uaData.brands)) {
-    return uaData.brands.map((_ref) => {
-      let {
-        brand,
-        version
-      } = _ref;
-      return brand + "/" + version;
-    }).join(" ");
-  }
-  return navigator.userAgent;
-}
-
 // ../../node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
 var min = Math.min;
 var max = Math.max;
@@ -4198,9 +4032,6 @@ function rectToClientRect(rect) {
     y
   };
 }
-
-// node_modules/@floating-ui/react/dist/floating-ui.react.mjs
-var ReactDOM2 = __toESM(require("react-dom"), 1);
 
 // ../../node_modules/@floating-ui/core/dist/floating-ui.core.mjs
 function computeCoordsFromPlacement(_ref, placement, rtl) {
@@ -4718,6 +4549,153 @@ var size = function(options) {
     }
   };
 };
+
+// ../../node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
+function hasWindow() {
+  return typeof window !== "undefined";
+}
+function getNodeName(node) {
+  if (isNode(node)) {
+    return (node.nodeName || "").toLowerCase();
+  }
+  return "#document";
+}
+function getWindow(node) {
+  var _node$ownerDocument;
+  return (node == null || (_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.defaultView) || window;
+}
+function getDocumentElement(node) {
+  var _ref;
+  return (_ref = (isNode(node) ? node.ownerDocument : node.document) || window.document) == null ? void 0 : _ref.documentElement;
+}
+function isNode(value) {
+  if (!hasWindow()) {
+    return false;
+  }
+  return value instanceof Node || value instanceof getWindow(value).Node;
+}
+function isElement(value) {
+  if (!hasWindow()) {
+    return false;
+  }
+  return value instanceof Element || value instanceof getWindow(value).Element;
+}
+function isHTMLElement(value) {
+  if (!hasWindow()) {
+    return false;
+  }
+  return value instanceof HTMLElement || value instanceof getWindow(value).HTMLElement;
+}
+function isShadowRoot(value) {
+  if (!hasWindow() || typeof ShadowRoot === "undefined") {
+    return false;
+  }
+  return value instanceof ShadowRoot || value instanceof getWindow(value).ShadowRoot;
+}
+function isOverflowElement(element) {
+  const {
+    overflow,
+    overflowX,
+    overflowY,
+    display
+  } = getComputedStyle2(element);
+  return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && !["inline", "contents"].includes(display);
+}
+function isTableElement(element) {
+  return ["table", "td", "th"].includes(getNodeName(element));
+}
+function isTopLayer(element) {
+  return [":popover-open", ":modal"].some((selector) => {
+    try {
+      return element.matches(selector);
+    } catch (e) {
+      return false;
+    }
+  });
+}
+function isContainingBlock(elementOrCss) {
+  const webkit = isWebKit();
+  const css = isElement(elementOrCss) ? getComputedStyle2(elementOrCss) : elementOrCss;
+  return css.transform !== "none" || css.perspective !== "none" || (css.containerType ? css.containerType !== "normal" : false) || !webkit && (css.backdropFilter ? css.backdropFilter !== "none" : false) || !webkit && (css.filter ? css.filter !== "none" : false) || ["transform", "perspective", "filter"].some((value) => (css.willChange || "").includes(value)) || ["paint", "layout", "strict", "content"].some((value) => (css.contain || "").includes(value));
+}
+function getContainingBlock(element) {
+  let currentNode = getParentNode(element);
+  while (isHTMLElement(currentNode) && !isLastTraversableNode(currentNode)) {
+    if (isContainingBlock(currentNode)) {
+      return currentNode;
+    } else if (isTopLayer(currentNode)) {
+      return null;
+    }
+    currentNode = getParentNode(currentNode);
+  }
+  return null;
+}
+function isWebKit() {
+  if (typeof CSS === "undefined" || !CSS.supports)
+    return false;
+  return CSS.supports("-webkit-backdrop-filter", "none");
+}
+function isLastTraversableNode(node) {
+  return ["html", "body", "#document"].includes(getNodeName(node));
+}
+function getComputedStyle2(element) {
+  return getWindow(element).getComputedStyle(element);
+}
+function getNodeScroll(element) {
+  if (isElement(element)) {
+    return {
+      scrollLeft: element.scrollLeft,
+      scrollTop: element.scrollTop
+    };
+  }
+  return {
+    scrollLeft: element.scrollX,
+    scrollTop: element.scrollY
+  };
+}
+function getParentNode(node) {
+  if (getNodeName(node) === "html") {
+    return node;
+  }
+  const result = (
+    // Step into the shadow DOM of the parent of a slotted node.
+    node.assignedSlot || // DOM Element detected.
+    node.parentNode || // ShadowRoot detected.
+    isShadowRoot(node) && node.host || // Fallback.
+    getDocumentElement(node)
+  );
+  return isShadowRoot(result) ? result.host : result;
+}
+function getNearestOverflowAncestor(node) {
+  const parentNode = getParentNode(node);
+  if (isLastTraversableNode(parentNode)) {
+    return node.ownerDocument ? node.ownerDocument.body : node.body;
+  }
+  if (isHTMLElement(parentNode) && isOverflowElement(parentNode)) {
+    return parentNode;
+  }
+  return getNearestOverflowAncestor(parentNode);
+}
+function getOverflowAncestors(node, list, traverseIframes) {
+  var _node$ownerDocument2;
+  if (list === void 0) {
+    list = [];
+  }
+  if (traverseIframes === void 0) {
+    traverseIframes = true;
+  }
+  const scrollableAncestor = getNearestOverflowAncestor(node);
+  const isBody = scrollableAncestor === ((_node$ownerDocument2 = node.ownerDocument) == null ? void 0 : _node$ownerDocument2.body);
+  const win = getWindow(scrollableAncestor);
+  if (isBody) {
+    const frameElement = getFrameElement(win);
+    return list.concat(win, win.visualViewport || [], isOverflowElement(scrollableAncestor) ? scrollableAncestor : [], frameElement && traverseIframes ? getOverflowAncestors(frameElement) : []);
+  }
+  return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, [], traverseIframes));
+}
+function getFrameElement(win) {
+  return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
+}
 
 // ../../node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
 function getCssDimensions(element) {
@@ -5547,11 +5525,71 @@ var size3 = (options, deps) => ({
   options: [options, deps]
 });
 
-// node_modules/@floating-ui/react/dist/floating-ui.react.mjs
-var SafeReact = {
-  ...React13
-};
-var useInsertionEffect = SafeReact.useInsertionEffect;
+// ../../node_modules/@floating-ui/react/dist/floating-ui.react.esm.js
+var React13 = __toESM(require("react"));
+var import_react46 = require("react");
+var import_react_dom5 = require("react-dom");
+var index2 = typeof document !== "undefined" ? import_react46.useLayoutEffect : import_react46.useEffect;
+var serverHandoffComplete = false;
+var count = 0;
+var genId = () => "floating-ui-" + count++;
+function useFloatingId() {
+  const [id, setId] = React13.useState(() => serverHandoffComplete ? genId() : void 0);
+  index2(() => {
+    if (id == null) {
+      setId(genId());
+    }
+  }, []);
+  React13.useEffect(() => {
+    if (!serverHandoffComplete) {
+      serverHandoffComplete = true;
+    }
+  }, []);
+  return id;
+}
+var useReactId = React13[/* @__PURE__ */ "useId".toString()];
+var useId3 = useReactId || useFloatingId;
+function createPubSub() {
+  const map = /* @__PURE__ */ new Map();
+  return {
+    emit(event, data) {
+      var _map$get;
+      (_map$get = map.get(event)) == null ? void 0 : _map$get.forEach((handler) => handler(data));
+    },
+    on(event, listener) {
+      map.set(event, [...map.get(event) || [], listener]);
+    },
+    off(event, listener) {
+      var _map$get2;
+      map.set(event, ((_map$get2 = map.get(event)) == null ? void 0 : _map$get2.filter((l) => l !== listener)) || []);
+    }
+  };
+}
+var FloatingTreeContext = /* @__PURE__ */ React13.createContext(null);
+var useFloatingTree = () => React13.useContext(FloatingTreeContext);
+function getDocument(node) {
+  return (node == null ? void 0 : node.ownerDocument) || document;
+}
+function getUserAgent() {
+  const uaData = navigator.userAgentData;
+  if (uaData && Array.isArray(uaData.brands)) {
+    return uaData.brands.map((_ref) => {
+      let {
+        brand,
+        version
+      } = _ref;
+      return brand + "/" + version;
+    }).join(" ");
+  }
+  return navigator.userAgent;
+}
+function getWindow2(value) {
+  return getDocument(value).defaultView || window;
+}
+function isElement2(value) {
+  return value ? value instanceof Element || value instanceof getWindow2(value).Element : false;
+}
+var useInsertionEffect = React13[/* @__PURE__ */ "useInsertionEffect".toString()];
 var useSafeInsertionEffect = useInsertionEffect || ((fn) => fn());
 function useEffectEvent(callback) {
   const ref = React13.useRef(() => {
@@ -5569,186 +5607,46 @@ function useEffectEvent(callback) {
     return ref.current == null ? void 0 : ref.current(...args);
   }, []);
 }
-var ARROW_UP = "ArrowUp";
-var ARROW_DOWN = "ArrowDown";
-var ARROW_LEFT = "ArrowLeft";
-var ARROW_RIGHT = "ArrowRight";
-var index2 = typeof document !== "undefined" ? import_react46.useLayoutEffect : import_react46.useEffect;
-var horizontalKeys = [ARROW_LEFT, ARROW_RIGHT];
-var verticalKeys = [ARROW_UP, ARROW_DOWN];
-var allKeys = [...horizontalKeys, ...verticalKeys];
-var serverHandoffComplete = false;
-var count = 0;
-var genId = () => (
-  // Ensure the id is unique with multiple independent versions of Floating UI
-  // on <React 18
-  "floating-ui-" + Math.random().toString(36).slice(2, 6) + count++
-);
-function useFloatingId() {
-  const [id, setId] = React13.useState(() => serverHandoffComplete ? genId() : void 0);
-  index2(() => {
-    if (id == null) {
-      setId(genId());
-    }
-  }, []);
-  React13.useEffect(() => {
-    serverHandoffComplete = true;
-  }, []);
-  return id;
-}
-var useReactId = SafeReact.useId;
-var useId3 = useReactId || useFloatingId;
-var devMessageSet;
-if (true) {
-  devMessageSet = /* @__PURE__ */ new Set();
-}
-function warn() {
-  var _devMessageSet;
-  for (var _len = arguments.length, messages = new Array(_len), _key = 0; _key < _len; _key++) {
-    messages[_key] = arguments[_key];
-  }
-  const message = "Floating UI: " + messages.join(" ");
-  if (!((_devMessageSet = devMessageSet) != null && _devMessageSet.has(message))) {
-    var _devMessageSet2;
-    (_devMessageSet2 = devMessageSet) == null || _devMessageSet2.add(message);
-    console.warn(message);
-  }
-}
-function error() {
-  var _devMessageSet3;
-  for (var _len2 = arguments.length, messages = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-    messages[_key2] = arguments[_key2];
-  }
-  const message = "Floating UI: " + messages.join(" ");
-  if (!((_devMessageSet3 = devMessageSet) != null && _devMessageSet3.has(message))) {
-    var _devMessageSet4;
-    (_devMessageSet4 = devMessageSet) == null || _devMessageSet4.add(message);
-    console.error(message);
-  }
-}
-function createPubSub() {
-  const map = /* @__PURE__ */ new Map();
-  return {
-    emit(event, data) {
-      var _map$get;
-      (_map$get = map.get(event)) == null || _map$get.forEach((handler) => handler(data));
-    },
-    on(event, listener) {
-      map.set(event, [...map.get(event) || [], listener]);
-    },
-    off(event, listener) {
-      var _map$get2;
-      map.set(event, ((_map$get2 = map.get(event)) == null ? void 0 : _map$get2.filter((l) => l !== listener)) || []);
-    }
-  };
-}
-var FloatingNodeContext = /* @__PURE__ */ React13.createContext(null);
-var FloatingTreeContext = /* @__PURE__ */ React13.createContext(null);
-var useFloatingParentNodeId = () => {
-  var _React$useContext;
-  return ((_React$useContext = React13.useContext(FloatingNodeContext)) == null ? void 0 : _React$useContext.id) || null;
-};
-var useFloatingTree = () => React13.useContext(FloatingTreeContext);
-var FOCUSABLE_ATTRIBUTE = "data-floating-ui-focusable";
-function useFloatingRootContext(options) {
-  const {
-    open = false,
-    onOpenChange: onOpenChangeProp,
-    elements: elementsProp
-  } = options;
-  const floatingId = useId3();
-  const dataRef = React13.useRef({});
-  const [events] = React13.useState(() => createPubSub());
-  const nested = useFloatingParentNodeId() != null;
-  if (true) {
-    const optionDomReference = elementsProp.reference;
-    if (optionDomReference && !isElement(optionDomReference)) {
-      error("Cannot pass a virtual element to the `elements.reference` option,", "as it must be a real DOM element. Use `refs.setPositionReference()`", "instead.");
-    }
-  }
-  const [positionReference, setPositionReference] = React13.useState(elementsProp.reference);
-  const onOpenChange = useEffectEvent((open2, event, reason) => {
-    dataRef.current.openEvent = open2 ? event : void 0;
-    events.emit("openchange", {
-      open: open2,
-      event,
-      reason,
-      nested
-    });
-    onOpenChangeProp == null || onOpenChangeProp(open2, event, reason);
-  });
-  const refs = React13.useMemo(() => ({
-    setPositionReference
-  }), []);
-  const elements = React13.useMemo(() => ({
-    reference: positionReference || elementsProp.reference || null,
-    floating: elementsProp.floating || null,
-    domReference: elementsProp.reference
-  }), [positionReference, elementsProp.reference, elementsProp.floating]);
-  return React13.useMemo(() => ({
-    dataRef,
-    open,
-    onOpenChange,
-    elements,
-    events,
-    floatingId,
-    refs
-  }), [open, onOpenChange, elements, events, floatingId, refs]);
-}
 function useFloating2(options) {
+  var _options$elements;
   if (options === void 0) {
     options = {};
   }
   const {
+    open = false,
+    onOpenChange: unstable_onOpenChange,
     nodeId
   } = options;
-  const internalRootContext = useFloatingRootContext({
-    ...options,
-    elements: {
-      reference: null,
-      floating: null,
-      ...options.elements
-    }
-  });
-  const rootContext = options.rootContext || internalRootContext;
-  const computedElements = rootContext.elements;
   const [_domReference, setDomReference] = React13.useState(null);
-  const [positionReference, _setPositionReference] = React13.useState(null);
-  const optionDomReference = computedElements == null ? void 0 : computedElements.domReference;
-  const domReference = optionDomReference || _domReference;
-  const domReferenceRef = React13.useRef(null);
+  const domReference = ((_options$elements = options.elements) == null ? void 0 : _options$elements.reference) || _domReference;
+  const position = useFloating(options);
   const tree = useFloatingTree();
-  index2(() => {
-    if (domReference) {
-      domReferenceRef.current = domReference;
+  const onOpenChange = useEffectEvent((open2, event) => {
+    if (open2) {
+      dataRef.current.openEvent = event;
     }
-  }, [domReference]);
-  const position = useFloating({
-    ...options,
-    elements: {
-      ...computedElements,
-      ...positionReference && {
-        reference: positionReference
-      }
-    }
+    unstable_onOpenChange == null ? void 0 : unstable_onOpenChange(open2, event);
   });
+  const domReferenceRef = React13.useRef(null);
+  const dataRef = React13.useRef({});
+  const events = React13.useState(() => createPubSub())[0];
+  const floatingId = useId3();
   const setPositionReference = React13.useCallback((node) => {
-    const computedPositionReference = isElement(node) ? {
+    const positionReference = isElement2(node) ? {
       getBoundingClientRect: () => node.getBoundingClientRect(),
       contextElement: node
     } : node;
-    _setPositionReference(computedPositionReference);
-    position.refs.setReference(computedPositionReference);
+    position.refs.setReference(positionReference);
   }, [position.refs]);
   const setReference = React13.useCallback((node) => {
-    if (isElement(node) || node === null) {
+    if (isElement2(node) || node === null) {
       domReferenceRef.current = node;
       setDomReference(node);
     }
-    if (isElement(position.refs.reference.current) || position.refs.reference.current === null || // Don't allow setting virtual elements using the old technique back to
+    if (isElement2(position.refs.reference.current) || position.refs.reference.current === null || // Don't allow setting virtual elements using the old technique back to
     // `null` to support `positionReference` + an unstable `reference`
     // callback ref.
-    node !== null && !isElement(node)) {
+    node !== null && !isElement2(node)) {
       position.refs.setReference(node);
     }
   }, [position.refs]);
@@ -5764,13 +5662,16 @@ function useFloating2(options) {
   }), [position.elements, domReference]);
   const context = React13.useMemo(() => ({
     ...position,
-    ...rootContext,
     refs,
     elements,
-    nodeId
-  }), [position, refs, elements, nodeId, rootContext]);
+    dataRef,
+    nodeId,
+    floatingId,
+    events,
+    open,
+    onOpenChange
+  }), [position, nodeId, floatingId, events, open, onOpenChange, refs, elements]);
   index2(() => {
-    rootContext.dataRef.current.floatingContext = context;
     const node = tree == null ? void 0 : tree.nodesRef.current.find((node2) => node2.id === nodeId);
     if (node) {
       node.context = context;
@@ -5783,48 +5684,26 @@ function useFloating2(options) {
     elements
   }), [position, refs, elements, context]);
 }
-var ACTIVE_KEY = "active";
-var SELECTED_KEY = "selected";
 function mergeProps2(userProps, propsList, elementKey) {
   const map = /* @__PURE__ */ new Map();
-  const isItem = elementKey === "item";
-  let domUserProps = userProps;
-  if (isItem && userProps) {
-    const {
-      [ACTIVE_KEY]: _,
-      [SELECTED_KEY]: __,
-      ...validProps
-    } = userProps;
-    domUserProps = validProps;
-  }
   return {
     ...elementKey === "floating" && {
-      tabIndex: -1,
-      [FOCUSABLE_ATTRIBUTE]: ""
+      tabIndex: -1
     },
-    ...domUserProps,
-    ...propsList.map((value) => {
-      const propsOrGetProps = value ? value[elementKey] : null;
-      if (typeof propsOrGetProps === "function") {
-        return userProps ? propsOrGetProps(userProps) : null;
-      }
-      return propsOrGetProps;
-    }).concat(userProps).reduce((acc, props) => {
+    ...userProps,
+    ...propsList.map((value) => value ? value[elementKey] : null).concat(userProps).reduce((acc, props) => {
       if (!props) {
         return acc;
       }
       Object.entries(props).forEach((_ref) => {
         let [key, value] = _ref;
-        if (isItem && [ACTIVE_KEY, SELECTED_KEY].includes(key)) {
-          return;
-        }
         if (key.indexOf("on") === 0) {
           if (!map.has(key)) {
             map.set(key, []);
           }
           if (typeof value === "function") {
             var _map$get;
-            (_map$get = map.get(key)) == null || _map$get.push(value);
+            (_map$get = map.get(key)) == null ? void 0 : _map$get.push(value);
             acc[key] = function() {
               var _map$get2;
               for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -5845,23 +5724,25 @@ function useInteractions(propsList) {
   if (propsList === void 0) {
     propsList = [];
   }
-  const referenceDeps = propsList.map((key) => key == null ? void 0 : key.reference);
-  const floatingDeps = propsList.map((key) => key == null ? void 0 : key.floating);
-  const itemDeps = propsList.map((key) => key == null ? void 0 : key.item);
+  const deps = propsList;
   const getReferenceProps = React13.useCallback(
     (userProps) => mergeProps2(userProps, propsList, "reference"),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    referenceDeps
+    deps
   );
   const getFloatingProps = React13.useCallback(
     (userProps) => mergeProps2(userProps, propsList, "floating"),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    floatingDeps
+    deps
   );
   const getItemProps = React13.useCallback(
     (userProps) => mergeProps2(userProps, propsList, "item"),
+    // Granularly check for `item` changes, because the `getItemProps` getter
+    // should be as referentially stable as possible since it may be passed as
+    // a prop to many components. All `item` key values must therefore be
+    // memoized.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    itemDeps
+    propsList.map((key) => key == null ? void 0 : key.item)
   );
   return React13.useMemo(() => ({
     getReferenceProps,
@@ -5895,7 +5776,7 @@ var inner = (props) => ({
       referenceOverflowThreshold = 0,
       scrollRef,
       ...detectOverflowOptions
-    } = evaluate(props, state);
+    } = props;
     const {
       rects,
       elements: {
@@ -5903,14 +5784,9 @@ var inner = (props) => ({
       }
     } = state;
     const item = listRef.current[index3];
-    const scrollEl = (scrollRef == null ? void 0 : scrollRef.current) || floating;
-    const clientTop = floating.clientTop || scrollEl.clientTop;
-    const floatingIsBordered = floating.clientTop !== 0;
-    const scrollElIsBordered = scrollEl.clientTop !== 0;
-    const floatingIsScrollEl = floating === scrollEl;
     if (true) {
       if (!state.placement.startsWith("bottom")) {
-        warn('`placement` side must be "bottom" when using the `inner`', "middleware.");
+        console.warn(['Floating UI: `placement` side must be "bottom" when using the', "`inner` middleware."].join(" "));
       }
     }
     if (!item) {
@@ -5920,27 +5796,29 @@ var inner = (props) => ({
       ...state,
       ...await offset3(-item.offsetTop - floating.clientTop - rects.reference.height / 2 - item.offsetHeight / 2 - innerOffset).fn(state)
     };
-    const overflow = await detectOverflow2(getArgsWithCustomFloatingHeight(nextArgs, scrollEl.scrollHeight + clientTop + floating.clientTop), detectOverflowOptions);
+    const el = (scrollRef == null ? void 0 : scrollRef.current) || floating;
+    const overflow = await detectOverflow2(getArgsWithCustomFloatingHeight(nextArgs, el.scrollHeight), detectOverflowOptions);
     const refOverflow = await detectOverflow2(nextArgs, {
       ...detectOverflowOptions,
       elementContext: "reference"
     });
-    const diffY = max(0, overflow.top);
+    const diffY = Math.max(0, overflow.top);
     const nextY = nextArgs.y + diffY;
-    const isScrollable = scrollEl.scrollHeight > scrollEl.clientHeight;
-    const rounder = isScrollable ? (v) => v : round;
-    const maxHeight = rounder(max(0, scrollEl.scrollHeight + (floatingIsBordered && floatingIsScrollEl || scrollElIsBordered ? clientTop * 2 : 0) - diffY - max(0, overflow.bottom)));
-    scrollEl.style.maxHeight = maxHeight + "px";
-    scrollEl.scrollTop = diffY;
+    const maxHeight = Math.max(0, el.scrollHeight - diffY - Math.max(0, overflow.bottom));
+    el.style.maxHeight = maxHeight + "px";
+    el.scrollTop = diffY;
     if (onFallbackChange) {
-      const shouldFallback = scrollEl.offsetHeight < item.offsetHeight * min(minItemsVisible, listRef.current.length) - 1 || refOverflow.top >= -referenceOverflowThreshold || refOverflow.bottom >= -referenceOverflowThreshold;
-      ReactDOM2.flushSync(() => onFallbackChange(shouldFallback));
+      if (el.offsetHeight < item.offsetHeight * Math.min(minItemsVisible, listRef.current.length - 1) - 1 || refOverflow.top >= -referenceOverflowThreshold || refOverflow.bottom >= -referenceOverflowThreshold) {
+        (0, import_react_dom5.flushSync)(() => onFallbackChange(true));
+      } else {
+        (0, import_react_dom5.flushSync)(() => onFallbackChange(false));
+      }
     }
     if (overflowRef) {
       overflowRef.current = await detectOverflow2(getArgsWithCustomFloatingHeight({
         ...nextArgs,
         y: nextY
-      }, scrollEl.offsetHeight + clientTop + floating.clientTop), detectOverflowOptions);
+      }, el.offsetHeight), detectOverflowOptions);
     }
     return {
       y: nextY
@@ -5963,8 +5841,9 @@ function useInnerOffset(context, props) {
   const prevScrollTopRef = React13.useRef(null);
   const initialOverflowRef = React13.useRef(null);
   React13.useEffect(() => {
-    if (!enabled)
+    if (!enabled) {
       return;
+    }
     function onWheel(e) {
       if (e.ctrlKey || !el || overflowRef.current == null) {
         return;
@@ -5980,7 +5859,7 @@ function useInnerOffset(context, props) {
       }
       if (!isAtTop && dY > 0 || !isAtBottom && dY < 0) {
         e.preventDefault();
-        ReactDOM2.flushSync(() => {
+        (0, import_react_dom5.flushSync)(() => {
           onChange((d) => d + Math[method](dY, remainingScroll * sign));
         });
       } else if (/firefox/i.test(getUserAgent())) {
@@ -6005,35 +5884,39 @@ function useInnerOffset(context, props) {
       };
     }
   }, [enabled, open, elements.floating, overflowRef, scrollRef, onChange]);
-  const floating = React13.useMemo(() => ({
-    onKeyDown() {
-      controlledScrollingRef.current = true;
-    },
-    onWheel() {
-      controlledScrollingRef.current = false;
-    },
-    onPointerMove() {
-      controlledScrollingRef.current = false;
-    },
-    onScroll() {
-      const el = (scrollRef == null ? void 0 : scrollRef.current) || elements.floating;
-      if (!overflowRef.current || !el || !controlledScrollingRef.current) {
-        return;
-      }
-      if (prevScrollTopRef.current !== null) {
-        const scrollDiff = el.scrollTop - prevScrollTopRef.current;
-        if (overflowRef.current.bottom < -0.5 && scrollDiff < -1 || overflowRef.current.top < -0.5 && scrollDiff > 1) {
-          ReactDOM2.flushSync(() => onChange((d) => d + scrollDiff));
+  return React13.useMemo(() => {
+    if (!enabled) {
+      return {};
+    }
+    return {
+      floating: {
+        onKeyDown() {
+          controlledScrollingRef.current = true;
+        },
+        onWheel() {
+          controlledScrollingRef.current = false;
+        },
+        onPointerMove() {
+          controlledScrollingRef.current = false;
+        },
+        onScroll() {
+          const el = (scrollRef == null ? void 0 : scrollRef.current) || elements.floating;
+          if (!overflowRef.current || !el || !controlledScrollingRef.current) {
+            return;
+          }
+          if (prevScrollTopRef.current !== null) {
+            const scrollDiff = el.scrollTop - prevScrollTopRef.current;
+            if (overflowRef.current.bottom < -0.5 && scrollDiff < -1 || overflowRef.current.top < -0.5 && scrollDiff > 1) {
+              (0, import_react_dom5.flushSync)(() => onChange((d) => d + scrollDiff));
+            }
+          }
+          requestAnimationFrame(() => {
+            prevScrollTopRef.current = el.scrollTop;
+          });
         }
       }
-      requestAnimationFrame(() => {
-        prevScrollTopRef.current = el.scrollTop;
-      });
-    }
-  }), [elements.floating, onChange, overflowRef, scrollRef]);
-  return React13.useMemo(() => enabled ? {
-    floating
-  } : {}, [enabled, floating]);
+    };
+  }, [enabled, overflowRef, elements.floating, scrollRef, onChange]);
 }
 
 // src/internal/floating.tsx
@@ -6496,7 +6379,7 @@ function calculateActiveIndex(action, resolvers) {
 
 // src/components/portal/portal.tsx
 var import_react53 = __toESM(require("react"), 1);
-var import_react_dom5 = require("react-dom");
+var import_react_dom6 = require("react-dom");
 
 // src/hooks/use-on-unmount.ts
 var import_react51 = require("react");
@@ -6646,7 +6529,7 @@ var InternalPortalFn = forwardRefWithAs(function InternalPortalFn2(props, ref) {
   if (!ready)
     return null;
   let ourProps = { ref: portalRef };
-  return !target || !element ? null : (0, import_react_dom5.createPortal)(
+  return !target || !element ? null : (0, import_react_dom6.createPortal)(
     render2({
       ourProps,
       theirProps,
@@ -7444,7 +7327,7 @@ function InputFn(props, ref) {
         return match(data.comboboxState, {
           [0 /* Open */]: () => actions.goToOption(1 /* Previous */),
           [1 /* Closed */]: () => {
-            (0, import_react_dom6.flushSync)(() => actions.openCombobox());
+            (0, import_react_dom7.flushSync)(() => actions.openCombobox());
             if (!data.value)
               actions.goToOption(3 /* Last */);
           }
@@ -7530,7 +7413,7 @@ function InputFn(props, ref) {
     if (data.comboboxState === 0 /* Open */)
       return;
     d.microTask(() => {
-      (0, import_react_dom6.flushSync)(() => actions.openCombobox());
+      (0, import_react_dom7.flushSync)(() => actions.openCombobox());
       actions.setActivationTrigger(1 /* Focus */);
     });
   });
@@ -7607,7 +7490,7 @@ function ButtonFn2(props, ref) {
         event.preventDefault();
         event.stopPropagation();
         if (data.comboboxState === 1 /* Closed */) {
-          (0, import_react_dom6.flushSync)(() => actions.openCombobox());
+          (0, import_react_dom7.flushSync)(() => actions.openCombobox());
         }
         refocusInput();
         return;
@@ -7615,7 +7498,7 @@ function ButtonFn2(props, ref) {
         event.preventDefault();
         event.stopPropagation();
         if (data.comboboxState === 1 /* Closed */) {
-          (0, import_react_dom6.flushSync)(() => actions.openCombobox());
+          (0, import_react_dom7.flushSync)(() => actions.openCombobox());
           if (!data.value)
             actions.goToOption(0 /* First */);
         }
@@ -7625,7 +7508,7 @@ function ButtonFn2(props, ref) {
         event.preventDefault();
         event.stopPropagation();
         if (data.comboboxState === 1 /* Closed */) {
-          (0, import_react_dom6.flushSync)(() => actions.openCombobox());
+          (0, import_react_dom7.flushSync)(() => actions.openCombobox());
           if (!data.value)
             actions.goToOption(3 /* Last */);
         }
@@ -7638,7 +7521,7 @@ function ButtonFn2(props, ref) {
         if (data.optionsElement && !data.optionsPropsRef.current.static) {
           event.stopPropagation();
         }
-        (0, import_react_dom6.flushSync)(() => actions.closeCombobox());
+        (0, import_react_dom7.flushSync)(() => actions.closeCombobox());
         refocusInput();
         return;
       default:
@@ -8284,7 +8167,7 @@ function FocusTrapFn(props, ref) {
       if (relatedTarget.dataset.headlessuiFocusGuard === "true") {
         return;
       }
-      if (!contains2(allContainers, relatedTarget)) {
+      if (!contains(allContainers, relatedTarget)) {
         if (recentlyUsedTabKey.current) {
           focusIn(
             container.current,
@@ -8396,14 +8279,14 @@ function useInitialFocus(features, {
       if (!mounted.current) {
         return;
       }
-      let activeElement2 = ownerDocument == null ? void 0 : ownerDocument.activeElement;
+      let activeElement = ownerDocument == null ? void 0 : ownerDocument.activeElement;
       if (initialFocus == null ? void 0 : initialFocus.current) {
-        if ((initialFocus == null ? void 0 : initialFocus.current) === activeElement2) {
-          previousActiveElement.current = activeElement2;
+        if ((initialFocus == null ? void 0 : initialFocus.current) === activeElement) {
+          previousActiveElement.current = activeElement;
           return;
         }
-      } else if (containerElement.contains(activeElement2)) {
-        previousActiveElement.current = activeElement2;
+      } else if (containerElement.contains(activeElement)) {
+        previousActiveElement.current = activeElement;
         return;
       }
       if (initialFocus == null ? void 0 : initialFocus.current) {
@@ -8453,7 +8336,7 @@ function useFocusLock(features, {
         return;
       let toElement = event.target;
       if (toElement && toElement instanceof HTMLElement) {
-        if (!contains2(allContainers, toElement)) {
+        if (!contains(allContainers, toElement)) {
           event.preventDefault();
           event.stopPropagation();
           focusElement(previous);
@@ -8468,7 +8351,7 @@ function useFocusLock(features, {
     true
   );
 }
-function contains2(containers, element) {
+function contains(containers, element) {
   for (let container of containers) {
     if (container.contains(element))
       return true;
@@ -9615,7 +9498,7 @@ var Legend = forwardRefWithAs(LegendFn);
 
 // src/components/listbox/listbox.tsx
 var import_react72 = __toESM(require("react"), 1);
-var import_react_dom7 = require("react-dom");
+var import_react_dom8 = require("react-dom");
 
 // src/hooks/use-did-element-move.ts
 var import_react70 = require("react");
@@ -10156,13 +10039,13 @@ function ButtonFn4(props, ref) {
       case " " /* Space */:
       case "ArrowDown" /* ArrowDown */:
         event.preventDefault();
-        (0, import_react_dom7.flushSync)(() => actions.openListbox());
+        (0, import_react_dom8.flushSync)(() => actions.openListbox());
         if (!data.value)
           actions.goToOption(0 /* First */);
         break;
       case "ArrowUp" /* ArrowUp */:
         event.preventDefault();
-        (0, import_react_dom7.flushSync)(() => actions.openListbox());
+        (0, import_react_dom8.flushSync)(() => actions.openListbox());
         if (!data.value)
           actions.goToOption(3 /* Last */);
         break;
@@ -10180,7 +10063,7 @@ function ButtonFn4(props, ref) {
     if (isDisabledReactIssue7711(event.currentTarget))
       return event.preventDefault();
     if (data.listboxState === 0 /* Open */) {
-      (0, import_react_dom7.flushSync)(() => actions.closeListbox());
+      (0, import_react_dom8.flushSync)(() => actions.closeListbox());
       (_a4 = data.buttonElement) == null ? void 0 : _a4.focus({ preventScroll: true });
     } else {
       event.preventDefault();
@@ -10344,7 +10227,7 @@ function OptionsFn2(props, ref) {
           actions.onChange(dataRef.current.value);
         }
         if (data.mode === 0 /* Single */) {
-          (0, import_react_dom7.flushSync)(() => actions.closeListbox());
+          (0, import_react_dom8.flushSync)(() => actions.closeListbox());
           (_a4 = data.buttonElement) == null ? void 0 : _a4.focus({ preventScroll: true });
         }
         break;
@@ -10369,13 +10252,13 @@ function OptionsFn2(props, ref) {
       case "Escape" /* Escape */:
         event.preventDefault();
         event.stopPropagation();
-        (0, import_react_dom7.flushSync)(() => actions.closeListbox());
+        (0, import_react_dom8.flushSync)(() => actions.closeListbox());
         (_b3 = data.buttonElement) == null ? void 0 : _b3.focus({ preventScroll: true });
         return;
       case "Tab" /* Tab */:
         event.preventDefault();
         event.stopPropagation();
-        (0, import_react_dom7.flushSync)(() => actions.closeListbox());
+        (0, import_react_dom8.flushSync)(() => actions.closeListbox());
         focusFrom(
           data.buttonElement,
           event.shiftKey ? 2 /* Previous */ : 4 /* Next */
@@ -10496,7 +10379,7 @@ function OptionFn2(props, ref) {
       return event.preventDefault();
     actions.onChange(value);
     if (data.mode === 0 /* Single */) {
-      (0, import_react_dom7.flushSync)(() => actions.closeListbox());
+      (0, import_react_dom8.flushSync)(() => actions.closeListbox());
       (_a3 = data.buttonElement) == null ? void 0 : _a3.focus({ preventScroll: true });
     }
   });
@@ -10617,7 +10500,7 @@ var Listbox = Object.assign(ListboxRoot, {
 
 // src/components/menu/menu.tsx
 var import_react73 = __toESM(require("react"), 1);
-var import_react_dom8 = require("react-dom");
+var import_react_dom9 = require("react-dom");
 function adjustOrderedState3(state, adjustment = (i) => i) {
   let currentActiveItem = state.activeItemIndex !== null ? state.items[state.activeItemIndex] : null;
   let sortedItems = sortByDomNode(
@@ -10877,13 +10760,13 @@ function ButtonFn5(props, ref) {
       case "ArrowDown" /* ArrowDown */:
         event.preventDefault();
         event.stopPropagation();
-        (0, import_react_dom8.flushSync)(() => dispatch({ type: 0 /* OpenMenu */ }));
+        (0, import_react_dom9.flushSync)(() => dispatch({ type: 0 /* OpenMenu */ }));
         dispatch({ type: 2 /* GoToItem */, focus: 0 /* First */ });
         break;
       case "ArrowUp" /* ArrowUp */:
         event.preventDefault();
         event.stopPropagation();
-        (0, import_react_dom8.flushSync)(() => dispatch({ type: 0 /* OpenMenu */ }));
+        (0, import_react_dom9.flushSync)(() => dispatch({ type: 0 /* OpenMenu */ }));
         dispatch({ type: 2 /* GoToItem */, focus: 3 /* Last */ });
         break;
     }
@@ -10902,7 +10785,7 @@ function ButtonFn5(props, ref) {
     if (disabled)
       return;
     if (state.menuState === 0 /* Open */) {
-      (0, import_react_dom8.flushSync)(() => dispatch({ type: 1 /* CloseMenu */ }));
+      (0, import_react_dom9.flushSync)(() => dispatch({ type: 1 /* CloseMenu */ }));
       (_a4 = state.buttonElement) == null ? void 0 : _a4.focus({ preventScroll: true });
     } else {
       event.preventDefault();
@@ -11065,13 +10948,13 @@ function ItemsFn(props, ref) {
       case "Escape" /* Escape */:
         event.preventDefault();
         event.stopPropagation();
-        (0, import_react_dom8.flushSync)(() => dispatch({ type: 1 /* CloseMenu */ }));
+        (0, import_react_dom9.flushSync)(() => dispatch({ type: 1 /* CloseMenu */ }));
         (_c = state.buttonElement) == null ? void 0 : _c.focus({ preventScroll: true });
         break;
       case "Tab" /* Tab */:
         event.preventDefault();
         event.stopPropagation();
-        (0, import_react_dom8.flushSync)(() => dispatch({ type: 1 /* CloseMenu */ }));
+        (0, import_react_dom9.flushSync)(() => dispatch({ type: 1 /* CloseMenu */ }));
         focusFrom(
           state.buttonElement,
           event.shiftKey ? 2 /* Previous */ : 4 /* Next */
@@ -11902,8 +11785,8 @@ function PanelFn3(props, ref) {
       return;
     if (!internalPanelRef.current)
       return;
-    let activeElement2 = ownerDocument == null ? void 0 : ownerDocument.activeElement;
-    if (internalPanelRef.current.contains(activeElement2))
+    let activeElement = ownerDocument == null ? void 0 : ownerDocument.activeElement;
+    if (internalPanelRef.current.contains(activeElement))
       return;
     focusIn(internalPanelRef.current, 1 /* First */);
   }, [state.__demoMode, focus, internalPanelRef.current, state.popoverState]);
